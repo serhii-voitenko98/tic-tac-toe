@@ -25,7 +25,6 @@ export class TicTacToeComponent implements OnInit {
   ]; // All the win combinations
   switcher = true; // Switch between 'tic' and 'tac' players. By default 'tic'
   winner = ''; // Name of the winner
-  isGameStopped = false;
   count = {
     ticCount: 0,
     tacCount: 0
@@ -45,29 +44,27 @@ export class TicTacToeComponent implements OnInit {
   }
 
   update(cellElement: HTMLElement) {
-    if (!this.isGameStopped) {
-      const currentPlayer = this.switcher ? 'tic' : 'tac';
+    const currentPlayer = this.switcher ? 'tic' : 'tac';
 
-      if (!cellElement.classList.contains('active')) {
-        cellElement.classList.add('active');
-        cellElement.classList.add(currentPlayer);
+    if (!cellElement.classList.contains('active')) {
+      cellElement.classList.add('active');
+      cellElement.classList.add(currentPlayer);
 
-        if (currentPlayer === 'tic') {
-          this.ticSteps.push(cellElement.id);
-        } else if (currentPlayer === 'tac') {
-          this.tacSteps.push(cellElement.id);
-        }
-
-        this.checkForWinner();
-
-        if (!this.winner) {
-          this.switcher = !this.switcher;
-        }
+      if (currentPlayer === 'tic') {
+        this.ticSteps.push(cellElement.id);
+      } else if (currentPlayer === 'tac') {
+        this.tacSteps.push(cellElement.id);
       }
 
-      console.log(this.ticSteps);
-      console.log(this.tacSteps);
+      this.checkForWinner();
+
+      if (!this.winner) {
+        this.switcher = !this.switcher;
+      }
     }
+
+    console.log(this.ticSteps);
+    console.log(this.tacSteps);
   }
 
   checkForWinner(): void {
@@ -87,27 +84,19 @@ export class TicTacToeComponent implements OnInit {
           this.winner = 'tac';
           this.count.tacCount++;
         }
-
-        if (checkForTicWin || checkForTacWin) {
-          console.log(this.winner + ' is a winner');
-          this.isGameStopped = true;
-        }
       }
     }
   }
 
 
   reset(): void {
-    if (this.isGameStopped) {
-      this.ticSteps = new Array<string>();
-      this.tacSteps = new Array<string>();
-      this.winner = '';
-      this.isGameStopped = !this.isGameStopped;
-      this.switcher = true; // Manually set 'tic' after reset
+    this.ticSteps = new Array<string>();
+    this.tacSteps = new Array<string>();
+    this.winner = '';
+    this.switcher = true; // Manually set 'tic' after reset
 
-      this.cells.toArray().forEach((item) => {
-        item.nativeElement.classList.remove('active', 'tic', 'tac');
-      });
-    }
+    this.cells.toArray().forEach((item) => {
+      item.nativeElement.classList.remove('active', 'tic', 'tac');
+    });
   }
 }
