@@ -1,0 +1,95 @@
+<div class="game">
+
+  <div class="game__counts">
+    <div
+      class="game__count"
+      [class.active]="this.switcher"
+    >
+      <div class="game__count-inner">
+        <svg aria-label="X" role="img" viewBox="0 0 128 128">
+          <path d="M16,16L112,112"></path>
+          <path d="M112,16L16,112"></path>
+        </svg>
+        <span>{{ this.count.ticCount }}</span></div>
+    </div>
+
+    <div
+      class="game__count"
+      [class.active]="!this.switcher"
+    >
+      <div class="game__count-inner">
+        <svg aria-label="O" role="img" viewBox="0 0 128 128">
+          <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16"></path>
+        </svg>
+        <span>{{ this.count.tacCount }}</span></div>
+    </div>
+  </div>
+
+  <div class="game__container">
+    <div
+      class="game__winner tic"
+      [class.active]="this.winner === 'tic'"
+    >
+      <div class="game__winner-item">
+        <svg role="img" viewBox="0 0 128 128" style="width: 128px; height: 128px;">
+          <path d="M16,16L112,112" style="stroke: rgb(84, 84, 84);"></path>
+          <path d="M112,16L16,112" style="stroke: rgb(84, 84, 84);"></path>
+        </svg>
+        <div>Winner!</div>
+      </div>
+    </div>
+
+    <div
+      class="game__winner tac"
+      [class.active]="this.winner === 'tac'"
+    >
+      <div class="game__winner-item">
+        <svg role="img" viewBox="0 0 128 128" style="width: 128px; height: 128px;">
+          <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);"></path>
+        </svg>
+        <div>Winner!</div>
+      </div>
+    </div>
+
+    <div class="game__body">
+      <svg>
+        <path d="M108,83L6,83"></path>
+        <path d="M108,153L6,153"></path>
+        <path d="M108,83L210,83"></path>
+        <path d="M108,153L210,153"></path>
+        <path d="M73,118L73,16"></path>
+        <path d="M143,118L143,16"></path>
+        <path d="M73,118L73,220"></path>
+        <path d="M143,118L143,220"></path>
+      </svg>
+
+      <table>
+        <tr
+          *ngFor="let row of this.elements"
+        >
+          <td
+            *ngFor="let column of row"
+            (click)="update(cell)"
+            [id]="column"
+            #cell
+          >
+            <svg class="game__element tic" role="img" viewBox="0 0 128 128">
+              <path d="M16,16L112,112"></path>
+              <path d="M112,16L16,112"></path>
+            </svg>
+
+            <svg class="game__element tac" role="img" viewBox="0 0 128 128">
+              <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);"></path>
+            </svg>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <button
+    (click)="reset()"
+    [disabled]="!this.isGameStopped"
+  >Restart game
+  </button>
+</div>

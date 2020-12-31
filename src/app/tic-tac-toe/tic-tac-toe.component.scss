@@ -1,0 +1,226 @@
+.game {
+  padding: 50px 0;
+
+  &__container {
+    padding: 25px 0;
+    background: #14bdac;
+    margin: 35px 0 0;
+    position: relative;
+  }
+
+  &__body {
+    width: 216px;
+    padding: 10px 0;
+    margin: 0 auto;
+    position: relative;
+
+    & > svg {
+      display: block;
+      position: absolute;
+      width: 216px;
+      height: 100%;
+      left: 0;
+      top: 0;
+      margin: auto;
+      right: 0;
+      z-index: 0;
+
+      path {
+        stroke: #0da192;
+        stroke-width: 6px;
+        transition-duration: 0.375s;
+        -webkit-transition-duration: 0.375s;
+      }
+    }
+  }
+
+  &__count {
+    border-bottom: 2px solid transparent;
+    color: rgba(0,0,0,.54);
+    font-size: 24px;
+    margin: 0;
+    padding: 2px 4px 0;
+    text-align: right;
+    transition: all 0.25s;
+    -webkit-transition: all 0.25s;
+    width: 100%;
+    box-shadow: 0 4px 5px rgba(0,0,0,.16);
+    border-radius: 8px;
+    line-height: 16px;
+    text-transform: uppercase;
+    background: #fff;
+    display: block;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-weight: 500;
+    min-width: 88px;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    outline: none;
+
+    &.active {
+      border-bottom-color: #14bdac;
+    }
+
+    &:first-child {
+      margin-right: 15px;
+    }
+
+    &s {
+      width: 200px;
+      margin: 0 auto;
+      display: flex;
+    }
+
+    &-inner {
+      padding: 10px 8px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    svg {
+      float: left;
+      height: 16px;
+      margin: 0 12px 0 4px;
+      width: 16px;
+
+      path {
+        fill: none;
+        stroke: black;
+        stroke-width: 16px;
+        transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+        -webkit-transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+      }
+    }
+  }
+
+  table {
+    border-spacing: 6px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
+    width: 100%;
+
+    tr {
+      td {
+        height: 48px;
+        padding: 8px;
+        position: relative;
+        vertical-align: top;
+        width: 48px;
+        cursor: pointer;
+
+        &.tic .game__element.tic {
+          visibility: visible;
+
+          path {
+            stroke-dasharray: 135.764;
+            stroke-dashoffset: 0;
+          }
+        }
+
+        &.tac .game__element.tac {
+          visibility: visible;
+
+          path {
+            stroke-dasharray: 301.635;
+            stroke-dashoffset: 0;
+          }
+        }
+      }
+    }
+  }
+
+  &__element {
+    visibility: hidden;
+    height: 48px;
+    position: absolute;
+    width: 48px;
+
+    path {
+      stroke-width: 16px;
+      transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    &.tic path {
+      stroke: rgb(84, 84, 84);
+      stroke-dashoffset: 135.764;
+    }
+
+    &.tac path {
+      stroke: rgb(242, 235, 211);
+      stroke-dashoffset: 301.635;
+      fill: none;
+    }
+  }
+
+  &__winner {
+    background: #14bdac;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    font-size: 34px;
+    font-weight: bold;
+    opacity: 0;
+    visibility: hidden;
+    text-align: center;
+    text-transform: uppercase;
+    z-index: 50;
+    color: rgb(84, 84, 84);
+    line-height: 236px;
+    transition: opacity .5s cubic-bezier(0.4,0.0,1,1),transform .5s cubic-bezier(0.4,0.0,1,1),visibility .5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      transition: height .4s cubic-bezier(0.5,0.5,0.5,1.5);
+      -webkit-transition: height .4s cubic-bezier(0.5,0.5,0.5,1.5);
+      vertical-align: middle;
+
+      path {
+        fill: none;
+        stroke-width: 16px;
+        transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+        -webkit-transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+      }
+    }
+
+    &-item {
+      display: block;
+      line-height: 1.5;
+    }
+
+    &.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+button {
+  display: block;
+  width: 100%;
+  color: #14bdac;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 28px;
+  text-transform: uppercase;
+  padding: 35px 20px;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  transition: .3s ease-in-out;
+
+  &:disabled {
+    color: dimgrey;
+    cursor: not-allowed;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
