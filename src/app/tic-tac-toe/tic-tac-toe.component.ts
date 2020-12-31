@@ -1,4 +1,4 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 
 @Component({
   selector: 'app-tic-tac-toe',
@@ -7,6 +7,7 @@ import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
 })
 export class TicTacToeComponent implements OnInit {
   @ViewChildren('cell') cells!: QueryList<any>;
+  @ViewChild('game') game!: ElementRef;
 
   rows = 3;
   columns = 3;
@@ -78,11 +79,13 @@ export class TicTacToeComponent implements OnInit {
         if (checkForTicWin) {
           this.winner = 'tic';
           this.count.ticCount++;
+          this.updateGameClass(`tic-${i + 1}`);
         }
 
         if (checkForTacWin) {
           this.winner = 'tac';
           this.count.tacCount++;
+          this.updateGameClass(`tac-${i + 1}`);
         }
 
         if (this.ticSteps.length === 5 || this.tacSteps.length === 5) {
@@ -106,5 +109,14 @@ export class TicTacToeComponent implements OnInit {
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
+  }
+
+  updateGameClass(className: string): void {
+    const gameElement = this.game.nativeElement;
+    const classes = gameElement.className.split(" ").filter((c: string) => {
+      return !(c.includes('tic-')) && !(c.includes('tac-'));
+    });
+    gameElement.className = classes.join(' ').trim();
+    gameElement.classList.add(className);
   }
 }

@@ -1,5 +1,6 @@
 .game {
   padding: 50px 0;
+  text-align: center;
 
   &__container {
     padding: 25px 0;
@@ -9,9 +10,7 @@
   }
 
   &__body {
-    width: 216px;
     padding: 10px 0;
-    margin: 0 auto;
     position: relative;
 
     & > svg {
@@ -99,7 +98,6 @@
     margin: 0 auto;
     position: relative;
     z-index: 3;
-    width: 100%;
 
     tr {
       td {
@@ -139,6 +137,8 @@
     height: 48px;
     position: absolute;
     width: 48px;
+    left: 50%;
+    margin-left: -24px;
 
     path {
       stroke-width: 16px;
@@ -199,6 +199,22 @@
     &.active {
       opacity: 1;
       visibility: visible;
+    }
+  }
+
+  &__wrapper {
+    display: inline-block;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      height: 8px;
+      width: 100%;
+      background: #545454;
+      top: 50%;
+      left: 0;
+      transform: rotate(45deg);
     }
   }
 }

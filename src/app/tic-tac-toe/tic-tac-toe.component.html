@@ -1,4 +1,4 @@
-<div class="game">
+<div class="game" #game>
 
   <div class="game__counts">
     <div
@@ -79,27 +79,29 @@
         <path d="M143,118L143,220"></path>
       </svg>
 
-      <table>
-        <tr
-          *ngFor="let row of this.elements"
-        >
-          <td
-            *ngFor="let column of row"
-            (click)="update(cell)"
-            [id]="column"
-            #cell
+      <div class="game__wrapper">
+        <table>
+          <tr
+            *ngFor="let row of this.elements"
           >
-            <svg class="game__element tic" role="img" viewBox="0 0 128 128">
-              <path d="M16,16L112,112"></path>
-              <path d="M112,16L16,112"></path>
-            </svg>
+            <td
+              *ngFor="let column of row"
+              (click)="update(cell)"
+              [id]="column"
+              #cell
+            >
+              <svg class="game__element tic" role="img" viewBox="0 0 128 128">
+                <path d="M16,16L112,112"></path>
+                <path d="M112,16L16,112"></path>
+              </svg>
 
-            <svg class="game__element tac" role="img" viewBox="0 0 128 128">
-              <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);"></path>
-            </svg>
-          </td>
-        </tr>
-      </table>
+              <svg class="game__element tac" role="img" viewBox="0 0 128 128">
+                <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);"></path>
+              </svg>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 
