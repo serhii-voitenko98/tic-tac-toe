@@ -51,6 +51,22 @@
       </div>
     </div>
 
+    <div
+      class="game__winner tac"
+      [class.active]="this.winner === 'draw'"
+    >
+      <div class="game__winner-item">
+        <svg role="img" viewBox="0 0 128 128" style="width: 128px; height: 128px;">
+          <path d="M16,16L112,112" style="stroke: rgb(84, 84, 84);"></path>
+          <path d="M112,16L16,112" style="stroke: rgb(84, 84, 84);"></path>
+        </svg>
+        <svg role="img" viewBox="0 0 128 128" style="width: 128px; height: 128px;">
+          <path d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16" style="stroke: rgb(242, 235, 211);"></path>
+        </svg>
+        <div>Draw!</div>
+      </div>
+    </div>
+
     <div class="game__body">
       <svg>
         <path d="M108,83L6,83"></path>

@@ -84,8 +84,16 @@ export class TicTacToeComponent implements OnInit {
           this.winner = 'tac';
           this.count.tacCount++;
         }
+
+        if (this.ticSteps.length === 5 || this.tacSteps.length === 5) {
+          if (!checkForTicWin && !checkForTacWin) {
+            this.winner = 'draw';
+          }
+        }
       }
     }
+
+    console.log(this.winner);
   }
 
 
