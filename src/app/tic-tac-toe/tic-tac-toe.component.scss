@@ -3,7 +3,7 @@
   text-align: center;
 
   &__container {
-    padding: 25px 0;
+    padding: 50px 0;
     background: #14bdac;
     margin: 35px 0 0;
     position: relative;
@@ -164,6 +164,7 @@
     position: absolute;
     top: 0;
     width: 100%;
+    color: rgb(84, 84, 84);
     font-size: 34px;
     font-weight: bold;
     opacity: 0;
@@ -171,7 +172,6 @@
     text-align: center;
     text-transform: uppercase;
     z-index: 50;
-    color: rgb(84, 84, 84);
     line-height: 236px;
     transition: opacity .5s cubic-bezier(0.4,0.0,1,1),transform .5s cubic-bezier(0.4,0.0,1,1),visibility .5s;
     display: flex;
@@ -207,14 +207,122 @@
     position: relative;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
-      height: 8px;
-      width: 100%;
-      background: #545454;
-      top: 50%;
-      left: 0;
-      transform: rotate(45deg);
+      height: 6px;
+      width: 0;
+      transition-duration: 0s;
+      transition-timing-function: linear;
+      transition-delay: 0s;
+      transition-property: width;
+
+      .game.tic-1 &,
+      .game.tac-1 &,
+      .game.tic-2 &,
+      .game.tac-2 &,
+      .game.tic-3 &,
+      .game.tac-3 &,
+      .game.tic-4 &,
+      .game.tac-4 &,
+      .game.tic-5 &,
+      .game.tac-5 &,
+      .game.tic-6 &,
+      .game.tac-6 &,
+      .game.tic-7 &,
+      .game.tac-7 &,
+      .game.tic-8 &,
+      .game.tac-8 & {
+        width: 240px;
+        transform-origin: 0;
+        transition-duration: .15s;
+        transition-delay: .45s;
+      }
+
+      .game.tic-1 &,
+      .game.tic-2 &,
+      .game.tic-3 &,
+      .game.tic-4 &,
+      .game.tic-5 &,
+      .game.tic-6 &,
+      .game.tic-7 &,
+      .game.tic-8 & {
+        background: #545454;
+      }
+
+      .game.tac-1 &,
+      .game.tac-2 &,
+      .game.tac-3 &,
+      .game.tac-4 &,
+      .game.tac-5 &,
+      .game.tac-6 &,
+      .game.tac-7 &,
+      .game.tac-8 & {
+        background: #f2ebd3;
+      }
+
+      .game.tic-1 &,
+      .game.tac-1 & {
+        top: 35px;
+        left: 0;
+        margin-left: -(240 - 216) / 2 * 1px;
+      }
+
+      .game.tic-2 &,
+      .game.tac-2 & {
+        top: 0;
+        left: 38px;
+        margin-top: -(240 - 216) / 2 * 1px;
+        transform: rotate(90deg);
+      }
+
+      .game.tic-3 &,
+      .game.tac-3 & {
+        top: 0;
+        left: 3px;
+        transform: rotate(45deg);
+        width: 300px;
+      }
+
+      .game.tic-4 &,
+      .game.tac-4 & {
+        top: 0;
+        left: 50%;
+        margin-top: -(240 - 216) / 2 * 1px;
+        transform: rotate(90deg);
+      }
+
+      .game.tic-5 &,
+      .game.tac-5 & {
+        top: 0;
+        right: 3px;
+        transform: rotate(-45deg);
+        transform-origin: 100%;
+        width: 300px;
+      }
+
+      .game.tic-6 &,
+      .game.tac-6 & {
+        top: 0;
+        right: 38px;
+        margin-top: -(240 - 216) / 2 * 1px;
+        transform: rotate(-90deg);
+        transform-origin: 100%;
+      }
+
+      .game.tic-7 &,
+      .game.tac-7 & {
+        top: 50%;
+        margin-top: -3px;
+        left: 0;
+        margin-left: -(240 - 216) / 2 * 1px;
+      }
+
+      .game.tic-8 &,
+      .game.tac-8 & {
+        bottom: 35px;
+        left: 0;
+        margin-left: -(240 - 216) / 2 * 1px;
+      }
     }
   }
 }

@@ -26,10 +26,11 @@ export class TicTacToeComponent implements OnInit {
   ]; // All the win combinations
   switcher = true; // Switch between 'tic' and 'tac' players. By default 'tic'
   winner = ''; // Name of the winner
-  count = {
+  count: {[key: string]: number} = {
     ticCount: 0,
     tacCount: 0
   }
+  isGameStopped = false;
 
   ngOnInit(): void {
     let counter = 0;
@@ -64,8 +65,8 @@ export class TicTacToeComponent implements OnInit {
       }
     }
 
-    console.log(this.ticSteps);
-    console.log(this.tacSteps);
+    // console.log(this.ticSteps);
+    // console.log(this.tacSteps);
   }
 
   checkForWinner(): void {
@@ -77,15 +78,11 @@ export class TicTacToeComponent implements OnInit {
         const checkForTacWin = checker(this.tacSteps, this.combinations[i]);
 
         if (checkForTicWin) {
-          this.winner = 'tic';
-          this.count.ticCount++;
-          this.updateGameClass(`tic-${i + 1}`);
+          this.setNewWinner('tic', i);
         }
 
         if (checkForTacWin) {
-          this.winner = 'tac';
-          this.count.tacCount++;
-          this.updateGameClass(`tac-${i + 1}`);
+          this.setNewWinner('tac', i);
         }
 
         if (this.ticSteps.length === 5 || this.tacSteps.length === 5) {
@@ -96,27 +93,48 @@ export class TicTacToeComponent implements OnInit {
       }
     }
 
-    console.log(this.winner);
+    // console.log(this.winner);
   }
 
+  setNewWinner(winner: string, currentIteration: number): void {
+    this.isGameStopped = true;
+    const promise = new Promise(resolve => {
+      setTimeout(() => {
+        this.winner = winner;
+        resolve();
+      }, 1000);
+    });
+    promise.then(() => this.isGameStopped = false);
+    this.count[`${winner}Count`]++;
+    this.updateGameClass(`${winner}-${currentIteration + 1}`);
+  }
 
   reset(): void {
+    if (this.winner) {
+      this.updateGameClass();
+    }
+
+    this.resetGame();
+  }
+
+  resetGame(): void {
     this.ticSteps = new Array<string>();
     this.tacSteps = new Array<string>();
     this.winner = '';
     this.switcher = true; // Manually set 'tic' after reset
-
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
   }
 
-  updateGameClass(className: string): void {
+  updateGameClass(className?: string): void {
     const gameElement = this.game.nativeElement;
     const classes = gameElement.className.split(" ").filter((c: string) => {
       return !(c.includes('tic-')) && !(c.includes('tac-'));
     });
     gameElement.className = classes.join(' ').trim();
-    gameElement.classList.add(className);
+    if (className) {
+      gameElement.classList.add(className!);
+    }
   }
 }
