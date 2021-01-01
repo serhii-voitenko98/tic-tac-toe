@@ -25,7 +25,7 @@ export class TicTacToeComponent implements OnInit {
     ['7', '8', '9']
   ]; // All the win combinations
   switcher = true; // Switch between 'tic' and 'tac' players. By default 'tic'
-  winner = ''; // Name of the winner
+  winner!: 'tic' | 'tac' | 'draw' | null; // Winner's name or draw
   count: {[key: string]: number} = {
     ticCount: 0,
     tacCount: 0
@@ -99,17 +99,20 @@ export class TicTacToeComponent implements OnInit {
     }
   }
 
-  setNewWinner(winner: string, currentIteration: number): void {
+  setNewWinner(winner: 'tic' | 'tac', currentIteration: number): void {
     this.isGameStopped = true;
+    this.count[`${winner}Count`]++;
+    this.updateGameClass(`${winner}-${currentIteration + 1}`);
+
     const promise = new Promise(resolve => {
       setTimeout(() => {
         this.winner = winner;
         resolve();
       }, 1000);
     });
-    promise.then(() => this.isGameStopped = false);
-    this.count[`${winner}Count`]++;
-    this.updateGameClass(`${winner}-${currentIteration + 1}`);
+    promise.then(() => {
+      this.isGameStopped = false;
+    });
   }
 
   reset(): void {
@@ -123,7 +126,7 @@ export class TicTacToeComponent implements OnInit {
   resetGame(): void {
     this.ticSteps = new Array<string>();
     this.tacSteps = new Array<string>();
-    this.winner = '';
+    this.winner = null;
     this.switcher = true; // Manually set switcher to 'tic' after reset
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
