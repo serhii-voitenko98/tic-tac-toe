@@ -48,7 +48,7 @@ export class TicTacToeComponent implements OnInit {
   update(cellElement: HTMLElement) {
     const currentPlayer = this.switcher ? 'tic' : 'tac';
 
-    if (!cellElement.classList.contains('active') && !this.isGameStopped) {
+    if (!cellElement.classList.contains('active') && !this.isGameStopped && !this.winner) {
       cellElement.classList.add('active');
       cellElement.classList.add(currentPlayer);
 
