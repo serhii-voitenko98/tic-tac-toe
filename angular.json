@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "todos": {
+    "tic-tac-toe": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/todos",
+            "outputPath": "dist/tic-tac-toe",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -58,8 +58,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "8kb",
+                  "maximumError": "10kb"
                 }
               ]
             }
@@ -68,18 +68,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "todos:build"
+            "browserTarget": "tic-tac-toe:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "todos:build:production"
+              "browserTarget": "tic-tac-toe:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "todos:build"
+            "browserTarget": "tic-tac-toe:build"
           }
         },
         "test": {
@@ -116,18 +116,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "todos:serve"
+            "devServerTarget": "tic-tac-toe:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "todos:serve:production"
+              "devServerTarget": "tic-tac-toe:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "todos",
+  "defaultProject": "tic-tac-toe",
   "cli": {
     "analytics": "e705f267-f36a-4ada-9304-41fc4dd25ad8"
   }

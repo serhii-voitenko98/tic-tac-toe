@@ -70,30 +70,33 @@ export class TicTacToeComponent implements OnInit {
   }
 
   checkForWinner(): void {
-    const checker = (arr: Array<string>, target: Array<string>) => target.every((v: string) => arr.includes(v));
-
     if (this.ticSteps.length >= 3 || this.tacSteps.length >= 3) {
+      const checker = (arr: Array<string>, target: Array<string>) => target.every((v: string) => arr.includes(v));
+      let checkForTicWin = false;
+      let checkForTacWin = false;
+
       for (let i = 0; i < this.combinations.length; i++) {
-        const checkForTicWin = checker(this.ticSteps, this.combinations[i]);
-        const checkForTacWin = checker(this.tacSteps, this.combinations[i]);
+        checkForTicWin = checker(this.ticSteps, this.combinations[i]);
+        checkForTacWin = checker(this.tacSteps, this.combinations[i]);
+
 
         if (checkForTicWin) {
           this.setNewWinner('tic', i);
+          break;
         }
 
         if (checkForTacWin) {
           this.setNewWinner('tac', i);
+          break;
         }
+      }
 
-        if (this.ticSteps.length === 5 || this.tacSteps.length === 5) {
-          if (!checkForTicWin && !checkForTacWin) {
-            this.winner = 'draw';
-          }
+      if (this.ticSteps.length === 5 || this.tacSteps.length === 5) {
+        if (!checkForTicWin && !checkForTacWin) {
+          this.winner = 'draw';
         }
       }
     }
-
-    // console.log(this.winner);
   }
 
   setNewWinner(winner: string, currentIteration: number): void {
@@ -121,7 +124,7 @@ export class TicTacToeComponent implements OnInit {
     this.ticSteps = new Array<string>();
     this.tacSteps = new Array<string>();
     this.winner = '';
-    this.switcher = true; // Manually set 'tic' after reset
+    this.switcher = true; // Manually set switcher to 'tic' after reset
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
