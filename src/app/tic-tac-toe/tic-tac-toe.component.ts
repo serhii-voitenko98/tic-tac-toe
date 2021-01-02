@@ -14,6 +14,10 @@ export class TicTacToeComponent implements OnInit {
   elements: Array<Array<number>> = new Array<Array<number>>();
   ticSteps: Array<string> = new Array<string>(); // Current steps of 'tic' player
   tacSteps: Array<string> = new Array<string>(); // Current steps of 'tac' player
+  count: {[key: string]: number} = {
+    ticCount: 0,
+    tacCount: 0
+  }
   combinations: Array<Array<string>> = [
     ['1', '2', '3'],
     ['1', '4', '7'],
@@ -25,12 +29,11 @@ export class TicTacToeComponent implements OnInit {
     ['7', '8', '9']
   ]; // All the win combinations
   switcher = true; // Switch between 'tic' and 'tac' players. By default 'tic'
-  winner!: 'tic' | 'tac' | 'draw' | null; // Winner's name or draw
-  count: {[key: string]: number} = {
-    ticCount: 0,
-    tacCount: 0
-  }
   isGameStopped = false;
+  isGamesStarted = false;
+  winner!: 'tic' | 'tac' | 'draw' | null; // Winner's name or draw
+  currentMode: 'isFriendMode' | 'isAiMode' = 'isFriendMode';
+  humansChoice: 'tic' | 'tac' = 'tic';
 
   ngOnInit(): void {
     let counter = 0;
@@ -45,28 +48,114 @@ export class TicTacToeComponent implements OnInit {
     }
   }
 
+  selectOnChange(): void {
+    this.reset();
+    this.count['ticCount'] = 0;
+    this.count['tacCount'] = 0;
+  }
+
   update(cellElement: HTMLElement) {
-    const currentPlayer = this.switcher ? 'tic' : 'tac';
-
     if (!cellElement.classList.contains('active') && !this.isGameStopped && !this.winner) {
-      cellElement.classList.add('active');
-      cellElement.classList.add(currentPlayer);
+      this.isGamesStarted = true;
 
-      if (currentPlayer === 'tic') {
-        this.ticSteps.push(cellElement.id);
-      } else if (currentPlayer === 'tac') {
-        this.tacSteps.push(cellElement.id);
+      if (this.currentMode === 'isFriendMode') {
+       this.friendGameMode(cellElement);
       }
 
-      this.checkForWinner();
-
-      if (!this.winner) {
-        this.switcher = !this.switcher;
+      if (this.currentMode === 'isAiMode') {
+        this.aiGameMode(cellElement);
       }
     }
 
     // console.log(this.ticSteps);
     // console.log(this.tacSteps);
+  }
+
+  friendGameMode(cellElement: HTMLElement): void {
+    const currentPlayer = this.switcher ? 'tic' : 'tac';
+
+    cellElement.classList.add('active');
+    cellElement.classList.add(currentPlayer);
+
+    if (currentPlayer === 'tic') {
+      this.ticSteps.push(cellElement.id);
+    } else if (currentPlayer === 'tac') {
+      this.tacSteps.push(cellElement.id);
+    }
+
+    this.checkForWinner();
+    this.switch();
+  }
+
+  aiGameMode(cellElement: HTMLElement): void {
+    let condition;
+
+    if (this.humansChoice === 'tic') {
+      condition = true;
+    } else if (this.humansChoice === 'tac') {
+      condition = false;
+    }
+
+    if (this.switcher === condition) {
+      cellElement.classList.add('active');
+      cellElement.classList.add(this.humansChoice);
+      if (this.humansChoice === 'tic') {
+        this.ticSteps.push(cellElement.id);
+      } else {
+        this.tacSteps.push(cellElement.id);
+      }
+      this.checkForWinner();
+      if (!this.isGameStopped && !this.winner) {
+        this.switch();
+        this.aiTurn();
+      }
+    }
+  }
+
+  aiTurn(): void {
+    setTimeout(() => {
+      const allSteps = [];
+      for (let step of this.ticSteps) allSteps.push(step);
+      for (let step of this.tacSteps) allSteps.push(step);
+
+      let number = this.getRandomInt(9).toString();
+
+      while (allSteps.includes(number)) {
+        number = this.getRandomInt(9).toString();
+      }
+
+      this.cells.toArray().forEach((item) => {
+        if (item.nativeElement.id === number) {
+          item.nativeElement.classList.add('active');
+          item.nativeElement.classList.add(this.humansChoice === 'tic' ? 'tac' : 'tic');
+        }
+      });
+
+      if (this.humansChoice === 'tic') {
+        this.tacSteps.push(number);
+      } else {
+        this.ticSteps.push(number);
+      }
+      this.checkForWinner();
+      if (!this.winner) {
+        this.switch();
+      }
+    }, 500);
+  }
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max) + 1;
+  }
+
+  setPlayer(player: boolean): void {
+    if (!this.isGamesStarted) {
+      this.switcher = player;
+      this.humansChoice = this.switcher ? 'tic' : 'tac';
+    }
+  }
+
+  switch() {
+    this.switcher = !this.switcher;
   }
 
   checkForWinner(): void {
@@ -78,7 +167,6 @@ export class TicTacToeComponent implements OnInit {
       for (let i = 0; i < this.combinations.length; i++) {
         checkForTicWin = checker(this.ticSteps, this.combinations[i]);
         checkForTacWin = checker(this.tacSteps, this.combinations[i]);
-
 
         if (checkForTicWin) {
           this.setNewWinner('tic', i);
@@ -120,10 +208,10 @@ export class TicTacToeComponent implements OnInit {
       this.updateGameClass();
     }
 
-    this.resetGame();
+    this.resetData();
   }
 
-  resetGame(): void {
+  resetData(): void {
     this.ticSteps = new Array<string>();
     this.tacSteps = new Array<string>();
     this.winner = null;
@@ -131,6 +219,8 @@ export class TicTacToeComponent implements OnInit {
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
+    this.isGamesStarted = false;
+    this.humansChoice = 'tic'; // Manually set human's choice to 'tic' after reset
   }
 
   updateGameClass(className?: string): void {

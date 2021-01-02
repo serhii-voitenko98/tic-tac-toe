@@ -325,6 +325,55 @@
       }
     }
   }
+
+  &__select {
+    width: 200px;
+    margin: 20px auto;
+
+    select {
+      color: rgba(0, 0, 0, 0.54);
+      font-size: 16px;
+      padding: 10px 5px;
+      text-align: right;
+      -webkit-transition: all 0.25s;
+      width: 100%;
+      box-shadow: 0 4px 5px rgba(0, 0, 0, 0.16);
+      border-radius: 8px;
+      line-height: 16px;
+      background: #fff;
+      display: block;
+      box-sizing: border-box;
+      cursor: pointer;
+      font-weight: bold;
+      min-width: 88px;
+      white-space: nowrap;
+      outline: none;
+      border: none;
+    }
+  }
+
+  &__turn {
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      height: 1em;
+      margin: 1px 5px 1px 0;
+      vertical-align: bottom;
+      width: 1em;
+
+      path {
+        fill: none;
+        stroke: black;
+        stroke-width: 16px;
+        transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+        -webkit-transition: stroke-dashoffset 0.225s cubic-bezier(0.4,0,0.2,1);
+      }
+    }
+  }
 }
 
 button {

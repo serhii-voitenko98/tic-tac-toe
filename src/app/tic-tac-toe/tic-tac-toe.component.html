@@ -4,6 +4,7 @@
     <div
       class="game__count"
       [class.active]="this.switcher"
+      (click)="this.setPlayer(true)"
     >
       <div class="game__count-inner">
         <svg aria-label="X" role="img" viewBox="0 0 128 128">
@@ -16,6 +17,7 @@
     <div
       class="game__count"
       [class.active]="!this.switcher"
+      (click)="this.setPlayer(false)"
     >
       <div class="game__count-inner">
         <svg aria-label="O" role="img" viewBox="0 0 128 128">
@@ -23,6 +25,26 @@
         </svg>
         <span>{{ this.count.tacCount }}</span></div>
     </div>
+  </div>
+
+  <div class="game__select">
+    <select
+      [(ngModel)]="this.currentMode"
+      (ngModelChange)="this.selectOnChange()"
+      [disabled]="this.isGameStopped"
+    >
+      <option value="isFriendMode">Play against a friend</option>
+      <option value="isAiMode">Play against an AI</option>
+    </select>
+  </div>
+
+  <div class="game__turn">
+    <span>
+      <svg *ngIf="this.switcher" role="img" viewBox="0 0 128 128"><path d="M16,16L112,112"></path><path
+        d="M112,16L16,112"></path></svg>
+      <svg *ngIf="!this.switcher" role="img" viewBox="0 0 128 128"><path
+        d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16"></path></svg>
+      Turn</span>
   </div>
 
   <div class="game__container">
@@ -52,7 +74,7 @@
     </div>
 
     <div
-      class="game__winner tac"
+      class="game__winner draw"
       [class.active]="this.winner === 'draw'"
     >
       <div class="game__winner-item">
