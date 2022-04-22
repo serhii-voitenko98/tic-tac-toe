@@ -1,0 +1,10 @@
+<div>
+  <h1>Available play rooms</h1>
+
+  <div *ngFor="let room of rooms">
+    <app-room
+      (roomSelectedEvent)="joinRoom($event)"
+      [room]="room"
+    ></app-room>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<div>
+  <h1>Login</h1>
+  <form [formGroup]="form">
+    <div>
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username">
+    </div>
+  </form>
+
+  <button (click)="login()">Login</button>
+</div>

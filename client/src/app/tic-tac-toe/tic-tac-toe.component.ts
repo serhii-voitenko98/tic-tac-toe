@@ -1,4 +1,5 @@
-import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { SocketService } from '../socket/socket.service';
 
 @Component({
   selector: 'app-tic-tac-toe',
@@ -6,6 +7,7 @@ import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from 
   styleUrls: ['./tic-tac-toe.component.scss']
 })
 export class TicTacToeComponent implements OnInit {
+  @Input() roomId!: string;
   @ViewChildren('cell') cells!: QueryList<any>;
   @ViewChild('game') game!: ElementRef;
 
@@ -24,13 +26,18 @@ export class TicTacToeComponent implements OnInit {
     ['4', '5', '6'],
     ['7', '8', '9']
   ]; // All the win combinations
-  switcher = true; // Switch between 'tic' and 'tac' players. By default 'tic'
+  switcher?: 'tic' | 'tac'; // Switch between 'tic' and 'tac' players. By default 'tic'
   winner!: 'tic' | 'tac' | 'draw' | null; // Winner's name or draw
   count: {[key: string]: number} = {
     ticCount: 0,
     tacCount: 0
   }
   isGameStopped = false;
+  stepDisabled = false;
+
+  constructor(
+    private socketService: SocketService
+  ) {}
 
   ngOnInit(): void {
     let counter = 0;
@@ -43,30 +50,60 @@ export class TicTacToeComponent implements OnInit {
         this.elements[i][j] = counter;
       }
     }
+
+    this.socketService.socket.on('connect', () => {
+      this.socketService.onNewMessage('newStep').subscribe((data: { player: 'tic' | 'tac'; index: number }) => {
+        const cellElement: ElementRef = this.cells.toArray().find((item) => {
+          return (item.nativeElement as HTMLTableCellElement).getAttribute('id') === data.index.toString();
+        });
+
+        this.stepDisabled = false;
+        this.update(cellElement.nativeElement);
+      });
+
+      this.socketService.onNewMessage('switcher').subscribe((data: { value: 'tic' | 'tac' }) => {
+        this.switcher = data.value;
+      });
+
+      this.socketService.onNewMessage('reset').subscribe(() => {
+        this.reset();
+      });
+    });
   }
 
-  update(cellElement: HTMLElement) {
-    const currentPlayer = this.switcher ? 'tic' : 'tac';
+  handleColumnClick(cellElement: HTMLElement, index: number): void {
+    if (this.stepDisabled) {
+      return;
+    }
+    this.update(cellElement, index);
+    this.stepDisabled = true;
+  }
+
+  update(cellElement: HTMLElement, index?: number) {
+    if (!this.switcher) {
+      return;
+    }
 
     if (!cellElement.classList.contains('active') && !this.isGameStopped && !this.winner) {
       cellElement.classList.add('active');
-      cellElement.classList.add(currentPlayer);
+      cellElement.classList.add(this.switcher);
 
-      if (currentPlayer === 'tic') {
+      if (this.switcher === 'tic') {
         this.ticSteps.push(cellElement.id);
-      } else if (currentPlayer === 'tac') {
+      } else if (this.switcher === 'tac') {
         this.tacSteps.push(cellElement.id);
+      }
+
+      if (index) {
+        this.socketService.emitEvent('newStep', { player: this.switcher, index, roomId: this.roomId });
       }
 
       this.checkForWinner();
 
       if (!this.winner) {
-        this.switcher = !this.switcher;
+        this.switcher = this.switcher === 'tic' ? 'tac' : 'tic';
       }
     }
-
-    // console.log(this.ticSteps);
-    // console.log(this.tacSteps);
   }
 
   checkForWinner(): void {
@@ -104,7 +141,7 @@ export class TicTacToeComponent implements OnInit {
     this.count[`${winner}Count`]++;
     this.updateGameClass(`${winner}-${currentIteration + 1}`);
 
-    const promise = new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       setTimeout(() => {
         this.winner = winner;
         resolve();
@@ -113,6 +150,11 @@ export class TicTacToeComponent implements OnInit {
     promise.then(() => {
       this.isGameStopped = false;
     });
+  }
+
+  handleRestartClick(): void {
+    this.reset();
+    this.socketService.emitEvent('reset', { roomId: this.roomId });
   }
 
   reset(): void {
@@ -127,7 +169,7 @@ export class TicTacToeComponent implements OnInit {
     this.ticSteps = new Array<string>();
     this.tacSteps = new Array<string>();
     this.winner = null;
-    this.switcher = true; // Manually set switcher to 'tic' after reset
+    this.switcher = undefined;
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
@@ -142,5 +184,13 @@ export class TicTacToeComponent implements OnInit {
     if (className) {
       gameElement.classList.add(className!);
     }
+  }
+
+  switchPlayer(value: 'tic' | 'tac') {
+    if (Boolean(this.switcher)) {
+      return;
+    }
+    this.switcher = value;
+    this.socketService.emitEvent('switcher', { roomId: this.roomId, value });
   }
 }

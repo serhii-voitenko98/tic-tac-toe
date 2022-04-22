@@ -3,7 +3,8 @@
   <div class="game__counts">
     <div
       class="game__count"
-      [class.active]="this.switcher"
+      [class.active]="this.switcher === 'tic'"
+      (click)="switchPlayer('tic')"
     >
       <div class="game__count-inner">
         <svg aria-label="X" role="img" viewBox="0 0 128 128">
@@ -15,7 +16,8 @@
 
     <div
       class="game__count"
-      [class.active]="!this.switcher"
+      [class.active]="this.switcher === 'tac'"
+      (click)="switchPlayer('tac')"
     >
       <div class="game__count-inner">
         <svg aria-label="O" role="img" viewBox="0 0 128 128">
@@ -23,6 +25,15 @@
         </svg>
         <span>{{ this.count.tacCount }}</span></div>
     </div>
+  </div>
+
+  <div *ngIf="switcher" class="game__turn">
+    <span>
+      <svg *ngIf="this.switcher === 'tic'" role="img" viewBox="0 0 128 128"><path d="M16,16L112,112"></path><path
+        d="M112,16L16,112"></path></svg>
+      <svg *ngIf="this.switcher === 'tac'" role="img" viewBox="0 0 128 128"><path
+        d="M64,16A48,48 0 1,0 64,112A48,48 0 1,0 64,16"></path></svg>
+      Turn</span>
   </div>
 
   <div class="game__container">
@@ -86,9 +97,9 @@
           >
             <td
               *ngFor="let column of row"
-              (click)="update(cell)"
-              [id]="column"
               #cell
+              (click)="handleColumnClick(cell, column)"
+              [id]="column"
             >
               <svg class="game__element tic" role="img" viewBox="0 0 128 128">
                 <path d="M16,16L112,112"></path>
@@ -106,7 +117,7 @@
   </div>
 
   <button
-    (click)="reset()"
+    (click)="handleRestartClick()"
     [disabled]="this.isGameStopped"
   >Restart game
   </button>
