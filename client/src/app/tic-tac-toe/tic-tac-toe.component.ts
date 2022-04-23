@@ -34,6 +34,7 @@ export class TicTacToeComponent implements OnInit {
   }
   isGameStopped = false;
   stepDisabled = false;
+  socketConnected = false;
 
   constructor(
     private socketService: SocketService
@@ -52,6 +53,7 @@ export class TicTacToeComponent implements OnInit {
     }
 
     this.socketService.socket.on('connect', () => {
+      this.socketConnected = true;
       this.socketService.onNewMessage('newStep').subscribe((data: { player: 'tic' | 'tac'; index: number }) => {
         const cellElement: ElementRef = this.cells.toArray().find((item) => {
           return (item.nativeElement as HTMLTableCellElement).getAttribute('id') === data.index.toString();
@@ -76,7 +78,9 @@ export class TicTacToeComponent implements OnInit {
       return;
     }
     this.update(cellElement, index);
-    this.stepDisabled = true;
+    if (this.socketConnected) {
+      this.stepDisabled = true;
+    }
   }
 
   update(cellElement: HTMLElement, index?: number) {
