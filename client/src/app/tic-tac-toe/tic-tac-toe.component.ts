@@ -2,7 +2,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { SocketService } from '../socket/socket.service';
 import { AuthService } from '../auth/auth.service';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -59,10 +59,8 @@ export class TicTacToeComponent implements OnInit {
       }
     }
 
-    this.socketService.socketConnected$.pipe(takeUntil(this.destroyed$), filter(v => v)).subscribe(() => {
-      this.socketConnected = true;
-      this.subscribeToSocketEvents();
-    });
+    this.socketConnected = true;
+    this.subscribeToSocketEvents();
   }
 
   ngOnDestroy(): void {
@@ -207,6 +205,7 @@ export class TicTacToeComponent implements OnInit {
 
   private subscribeToSocketEvents(): void {
     this.socketService.onNewMessage('newStep').subscribe((data: { player: 'tic' | 'tac'; index: number }) => {
+      console.log('on newStep');
       const cellElement: ElementRef = this.cells.toArray().find((item) => {
         return (item.nativeElement as HTMLTableCellElement).getAttribute('id') === data.index.toString();
       });
@@ -216,25 +215,32 @@ export class TicTacToeComponent implements OnInit {
     });
 
     this.socketService.onNewMessage('switcher').subscribe((data: { value: 'tic' | 'tac'; username: string }) => {
+      console.log('on switcher');
       this.switcher = data.value;
       this.snackbar.open(`${data.username} has choosen ${data.value} side!`);
       this.stepDisabled = true;
     });
 
+    this.socketService.onNewMessage('joinRoom').subscribe((data) => {
+      if (data.room === this.roomId) {
+        this.reset();
+        this.socketService.emitEvent('counter', { roomId: this.roomId, count: this.count });
+      }
+    });
+
+    this.socketService.onNewMessage('leaveRoom').subscribe((data) => {
+      if (data.room === this.roomId) {
+        this.reset();
+      }
+    });
+
     this.socketService.onNewMessage('reset').subscribe(() => {
+      console.log('on reset');
       this.reset();
-    });
-
-    this.socketService.onNewMessage('leaveRoom').subscribe(() => {
-      this.reset();
-    });
-
-    this.socketService.onNewMessage('joinRoom').subscribe(() => {
-      this.reset();
-      this.socketService.emitEvent('counter', { roomId: this.roomId, count: this.count });
     });
 
     this.socketService.onNewMessage('counter').subscribe((data: { count: { ticCount: number; tacCount: number } }) => {
+      console.log('on counter');
       this.count = data.count;
     });
   }
