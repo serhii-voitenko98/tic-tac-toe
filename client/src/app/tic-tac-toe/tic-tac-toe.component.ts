@@ -1,5 +1,9 @@
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { SocketService } from '../socket/socket.service';
+import { AuthService } from '../auth/auth.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-tic-tac-toe',
@@ -28,16 +32,19 @@ export class TicTacToeComponent implements OnInit {
   ]; // All the win combinations
   switcher?: 'tic' | 'tac'; // Switch between 'tic' and 'tac' players. By default 'tic'
   winner!: 'tic' | 'tac' | 'draw' | null; // Winner's name or draw
-  count: {[key: string]: number} = {
+  count: { ticCount: number; tacCount: number } = {
     ticCount: 0,
     tacCount: 0
   }
   isGameStopped = false;
   stepDisabled = false;
   socketConnected = false;
+  destroyed$ = new Subject();
 
   constructor(
-    private socketService: SocketService
+    private socketService: SocketService,
+    private snackbar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -52,25 +59,15 @@ export class TicTacToeComponent implements OnInit {
       }
     }
 
-    this.socketService.socket.on('connect', () => {
+    this.socketService.socketConnected$.pipe(takeUntil(this.destroyed$), filter(v => v)).subscribe(() => {
       this.socketConnected = true;
-      this.socketService.onNewMessage('newStep').subscribe((data: { player: 'tic' | 'tac'; index: number }) => {
-        const cellElement: ElementRef = this.cells.toArray().find((item) => {
-          return (item.nativeElement as HTMLTableCellElement).getAttribute('id') === data.index.toString();
-        });
-
-        this.stepDisabled = false;
-        this.update(cellElement.nativeElement);
-      });
-
-      this.socketService.onNewMessage('switcher').subscribe((data: { value: 'tic' | 'tac' }) => {
-        this.switcher = data.value;
-      });
-
-      this.socketService.onNewMessage('reset').subscribe(() => {
-        this.reset();
-      });
+      this.subscribeToSocketEvents();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   handleColumnClick(cellElement: HTMLElement, index: number): void {
@@ -83,7 +80,7 @@ export class TicTacToeComponent implements OnInit {
     }
   }
 
-  update(cellElement: HTMLElement, index?: number) {
+  update(cellElement: HTMLElement, index?: number): void {
     if (!this.switcher) {
       return;
     }
@@ -142,7 +139,11 @@ export class TicTacToeComponent implements OnInit {
 
   setNewWinner(winner: 'tic' | 'tac', currentIteration: number): void {
     this.isGameStopped = true;
-    this.count[`${winner}Count`]++;
+    if (winner === 'tic') {
+      this.count.ticCount++;
+    } else {
+      this.count.tacCount++;
+    }
     this.updateGameClass(`${winner}-${currentIteration + 1}`);
 
     const promise = new Promise<void>(resolve => {
@@ -174,9 +175,15 @@ export class TicTacToeComponent implements OnInit {
     this.tacSteps = new Array<string>();
     this.winner = null;
     this.switcher = undefined;
+    this.stepDisabled = false;
     this.cells.toArray().forEach((item) => {
       item.nativeElement.classList.remove('active', 'tic', 'tac');
     });
+  }
+
+  resetCount(): void {
+    this.count.ticCount = 0;
+    this.count.tacCount = 0;
   }
 
   updateGameClass(className?: string): void {
@@ -190,11 +197,45 @@ export class TicTacToeComponent implements OnInit {
     }
   }
 
-  switchPlayer(value: 'tic' | 'tac') {
+  switchPlayer(value: 'tic' | 'tac'): void {
     if (Boolean(this.switcher)) {
       return;
     }
     this.switcher = value;
-    this.socketService.emitEvent('switcher', { roomId: this.roomId, value });
+    this.socketService.emitEvent('switcher', { roomId: this.roomId, value, username: this.authService.getUser().username });
+  }
+
+  private subscribeToSocketEvents(): void {
+    this.socketService.onNewMessage('newStep').subscribe((data: { player: 'tic' | 'tac'; index: number }) => {
+      const cellElement: ElementRef = this.cells.toArray().find((item) => {
+        return (item.nativeElement as HTMLTableCellElement).getAttribute('id') === data.index.toString();
+      });
+
+      this.update(cellElement.nativeElement);
+      this.stepDisabled = false;
+    });
+
+    this.socketService.onNewMessage('switcher').subscribe((data: { value: 'tic' | 'tac'; username: string }) => {
+      this.switcher = data.value;
+      this.snackbar.open(`${data.username} has choosen ${data.value} side!`);
+      this.stepDisabled = true;
+    });
+
+    this.socketService.onNewMessage('reset').subscribe(() => {
+      this.reset();
+    });
+
+    this.socketService.onNewMessage('leaveRoom').subscribe(() => {
+      this.reset();
+    });
+
+    this.socketService.onNewMessage('joinRoom').subscribe(() => {
+      this.reset();
+      this.socketService.emitEvent('counter', { roomId: this.roomId, count: this.count });
+    });
+
+    this.socketService.onNewMessage('counter').subscribe((data: { count: { ticCount: number; tacCount: number } }) => {
+      this.count = data.count;
+    });
   }
 }

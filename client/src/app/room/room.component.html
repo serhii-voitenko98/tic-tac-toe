@@ -2,5 +2,5 @@
   class="room"
   (click)="roomSelected()"
 >
-  {{ room.name }}
+  {{ room.name }} ({{ room.count || 0 }}/{{ maxPlayers }})
 </div>

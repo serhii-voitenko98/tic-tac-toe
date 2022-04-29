@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './login/login.component';
+import { RoomGuard } from './guards/room.guard';
 
 const routes: Routes = [
   {
@@ -18,7 +19,7 @@ const routes: Routes = [
   {
     path: 'room/:id',
     component: RoomPageComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoomGuard]
   }
 ];
 

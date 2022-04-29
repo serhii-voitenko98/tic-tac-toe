@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SocketService {
   socket!: Socket;
+  socketConnected$ = new BehaviorSubject(false);
 
   constructor() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io(environment.BACKEND_URL);
+    this.socket.on('connect', () => {
+      this.socketConnected$.next(true);
+    });
   }
 
   onNewMessage(message: string): Observable<any> {

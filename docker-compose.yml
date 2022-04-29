@@ -1,0 +1,13 @@
+services:
+  client:
+    container_name: tic-tac-toe-client
+    build: client
+    image: serhiivoitenko/tic-tac-toe-client
+    ports:
+      - "80:80"
+  backend:
+    container_name: tic-tac-toe-backend
+    build: service
+    image: serhiivoitenko/tic-tac-toe-backend
+    ports:
+      - "5000:5000"
